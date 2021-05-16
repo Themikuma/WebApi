@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace LHCRUD.Data.Tests
 {
-    public class Tests
+    public class DataSeedingTests
     {
 
         [Test]

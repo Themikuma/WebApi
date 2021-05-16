@@ -12,7 +12,10 @@ namespace LHCRUD.Data
         : base(options)
         {
         }
+        public ApplicationDbContext()
+        {
+        }
 
-        public DbSet<Book> Books { get; set; }
+        public virtual DbSet<Book> Books { get; set; }
     }
 }
