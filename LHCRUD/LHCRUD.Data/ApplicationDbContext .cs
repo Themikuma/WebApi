@@ -15,6 +15,12 @@ namespace LHCRUD.Data
         public ApplicationDbContext()
         {
         }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Book>()
+                .HasIndex(b => b.ISBN)
+                .IsUnique();
+        }
 
         public virtual DbSet<Book> Books { get; set; }
     }

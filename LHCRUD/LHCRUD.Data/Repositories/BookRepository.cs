@@ -29,7 +29,7 @@ namespace LHCRUD.Data.Repositories
 
         public Book GetBookById(int id)
         {
-            return  _dbContext.Books.Single(t => t.Id.Equals(id));
+            return _dbContext.Books.Single(t => t.Id.Equals(id));
         }
 
         public Book GetBookByISBN(string isbn)
@@ -51,17 +51,17 @@ namespace LHCRUD.Data.Repositories
         {
             try
             {
-                using (var transaction = _dbContext.Database.BeginTransaction())
-                {
-                    _dbContext.Books.Update(updatedBook);
-                    await _dbContext.SaveChangesAsync();
-                    CheckISBN(updatedBook);
-                    await transaction.CommitAsync();
-                }
+                _dbContext.Books.Update(updatedBook);
+                //CheckISBN(updatedBook);
+                await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
                 throw new ArgumentNullException($"No book with id:{updatedBook.Id} found. Aborting update");
+            }
+            catch (DbUpdateException)
+            {
+                throw new ArgumentException(DuplicateMessage);
             }
         }
 
@@ -70,20 +70,6 @@ namespace LHCRUD.Data.Repositories
             var toRemove = await _dbContext.Books.FindAsync(id);
             _dbContext.Books.Remove(toRemove);
             await _dbContext.SaveChangesAsync();
-        }
-
-        // Make sure there is no more than one entry that has this ISBN. 
-        private void CheckISBN(Book book)
-        {
-            try
-            {
-                _dbContext.Books.SingleOrDefault(t => t.ISBN.Equals(book.ISBN));
-
-            }
-            catch (InvalidOperationException)
-            {
-                throw new ArgumentException(DuplicateMessage);
-            }
         }
     }
 }

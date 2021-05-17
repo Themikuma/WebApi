@@ -49,7 +49,6 @@ namespace LHCRUD.Data.Tests
             _repo = new BookRepository(mockContext.Object);
             _service = new BooksDataService(_repo);
         }
-
         [Test]
         public async Task TestPartialUpdateAsyncWithDuplicateISBN()
         {
