@@ -49,21 +49,6 @@ namespace LHCRUD.Data.Tests
             _repo = new BookRepository(mockContext.Object);
             _service = new BooksDataService(_repo);
         }
-        [Test]
-        public async Task TestPartialUpdateAsyncWithDuplicateISBN()
-        {
-            string updatedISBN = "1234";
-            await _service.PartialUpdateBookAsync(new Book
-            {
-                Id = 2,
-                ISBN = updatedISBN
-            });
-            Assert.ThrowsAsync<ArgumentException>(async () => await _service.PartialUpdateBookAsync(new Book
-            {
-                Id = 1,
-                ISBN = updatedISBN
-            }));
-        }
 
         [Test]
         public async Task TestPartialUpdateAsyncToChangeTitle()

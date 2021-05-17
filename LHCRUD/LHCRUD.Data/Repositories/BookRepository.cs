@@ -52,7 +52,6 @@ namespace LHCRUD.Data.Repositories
             try
             {
                 _dbContext.Books.Update(updatedBook);
-                //CheckISBN(updatedBook);
                 await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
