@@ -1,4 +1,5 @@
 ﻿using LHCRUD.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace LHCRUD.Data.Repositories
 
         public async Task AddBookAsync(Book book)
         {
-            if (_dbContext.Books.Any(t => t.ISBN.Equals(book.ISBN, StringComparison.OrdinalIgnoreCase)))
+            if (_dbContext.Books.Any(t => t.ISBN.Equals(book.ISBN)))
             {
                 throw new ArgumentException(DuplicateMessage);
             }
@@ -33,12 +34,12 @@ namespace LHCRUD.Data.Repositories
 
         public Book GetBookByISBN(string isbn)
         {
-            return _dbContext.Books.Single(t => t.ISBN.Equals(isbn, StringComparison.OrdinalIgnoreCase));
+            return _dbContext.Books.Single(t => t.ISBN.Equals(isbn));
         }
 
         public IEnumerable<Book> GetBooksByAuthor(string author)
         {
-            return _dbContext.Books.Where(t => t.Author.Equals(author, StringComparison.OrdinalIgnoreCase));
+            return _dbContext.Books.Where(t => t.Author.Contains(author));
         }
 
         public IEnumerable<Book> GetBooksPublishedAfterDate(DateTime start)
@@ -46,19 +47,25 @@ namespace LHCRUD.Data.Repositories
             return _dbContext.Books.Where(t => t.Published > start);
         }
 
-        /// <summary>
-        /// This method does a full update and replaces all values with the given object.
-        /// </summary>
-        /// <param name="updatedBook"></param>
-        /// <returns></returns>
         public async Task UpdateBookAsync(Book updatedBook)
         {
-            _dbContext.Books.Update(updatedBook);
-            CheckISBN(updatedBook);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                using (var transaction = _dbContext.Database.BeginTransaction())
+                {
+                    _dbContext.Books.Update(updatedBook);
+                    await _dbContext.SaveChangesAsync();
+                    CheckISBN(updatedBook);
+                    await transaction.CommitAsync();
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new ArgumentNullException($"No book with id:{updatedBook.Id} found. Aborting update");
+            }
         }
 
-        public async Task DeleteBook(int id)
+        public async Task DeleteBookAsync(int id)
         {
             var toRemove = await _dbContext.Books.FindAsync(id);
             _dbContext.Books.Remove(toRemove);

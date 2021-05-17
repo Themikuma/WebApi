@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LHCRUD.Data.Models\LHCRUD.Data.Models.csproj" />
+    <ProjectReference Include="..\LHCRUD.Web.ViewModels\LHCRUD.Web.ViewModels.csproj" />
+  </ItemGroup>
+
+</Project>

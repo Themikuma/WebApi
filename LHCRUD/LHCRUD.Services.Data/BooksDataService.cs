@@ -5,22 +5,16 @@ using System.Threading.Tasks;
 
 namespace LHCRUD.Services
 {
-    public class BooksDataService
+    public class BooksDataService : IBooksDataService
     {
         private IBookRepository _bookRepository;
         public BooksDataService(IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
         }
-        /// <summary>
-        /// This method does a partial update by checking for values in each property. If the update model doesn't have a value for a property the method doesn't update it.
-        /// </summary>
-        /// <param name="partialBook">Partial model which to use for the update. Id is required</param>
-        /// <returns>The updated entry</returns>
-        /// <exception cref="ArgumentException">Thrown when after the update there are two same ISBNs</exception>
         public async Task<Book> PartialUpdateBookAsync(Book partialBook)
         {
-            var toUpdate =  _bookRepository.GetBookById(partialBook.Id);
+            var toUpdate = _bookRepository.GetBookById(partialBook.Id);
             if (!string.IsNullOrEmpty(partialBook.Title))
             {
                 toUpdate.Title = partialBook.Title;
